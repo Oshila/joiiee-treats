@@ -20,7 +20,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-1.5 shadow-md"
+             className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.8)] backdrop-blur-sm rounded-full px-4 py-1.5 shadow-md"
             >
               <Star size={14} className="text-yellow-400 fill-yellow-400" />
               <span className="text-xs font-medium text-gray-700">4.9/5 Rating</span>

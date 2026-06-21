@@ -231,7 +231,7 @@ export const CartDrawer = () => {
           >
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-pink-100 bg-pink-50/30">
+              <div className="flex items-center justify-between p-4 border-b border-pink-100 bg-[rgba(252,228,232,0.3)]">
                 <div className="flex items-center gap-3">
                   <ShoppingBag size={20} className="text-pink-500" />
                   <h2 className="text-lg font-bold text-gray-800">Your Cart</h2>
@@ -278,7 +278,7 @@ export const CartDrawer = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 rounded-full bg-white shadow-sm hover:bg-pink-50 flex items-center justify-center text-pink-500 transition-colors"
+                           className="w-7 h-7 rounded-full bg-white shadow-sm hover:bg-pink-50 flex items-center justify-center text-pink-500 transition-colors"
                           >
                             <Minus size={12} />
                           </button>

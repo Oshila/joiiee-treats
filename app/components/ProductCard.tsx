@@ -66,7 +66,7 @@ export const ProductCard = ({ name, description, emoji, image, sizes, index = 0 
           </div>
         </div>
         
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-pink-500 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+        <div className="absolute top-3 right-3 bg-[rgba(255,255,255,0.9)] backdrop-blur-sm text-pink-500 text-xs font-bold px-3 py-1 rounded-full shadow-md">
           ⭐ Premium
         </div>
       </div>

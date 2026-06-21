@@ -40,8 +40,8 @@ export const Testimonials = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-1.5 bg-white/80 text-pink-500 text-sm font-semibold rounded-full mb-4">
-            Testimonials
+          
+            Testimonials<span className="inline-block px-4 py-1.5 bg-[rgba(255,255,255,0.8)] text-pink-500 text-sm font-semibold rounded-full mb-4">
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800">
             What Our <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">Customers Say</span>
@@ -56,7 +56,7 @@ export const Testimonials = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-md hover:shadow-xl transition-all"
+              className="bg-[rgba(255,255,255,0.8)] backdrop-blur-sm rounded-3xl p-6 shadow-md hover:shadow-xl transition-all"
             >
               <div className="flex items-center gap-4">
                 <img
