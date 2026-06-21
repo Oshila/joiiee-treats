@@ -8,7 +8,7 @@ interface CartItem {
   size: string;
   price: number;
   quantity: number;
-  emoji: string;
+  emoji: string;  // ← Make sure this is here
 }
 
 interface CartContextType {

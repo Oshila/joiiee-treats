@@ -36,7 +36,7 @@ export const CartDrawer = () => {
       `Address: ${formData.address}\n\n` +
       `📦 *Order Items*\n` +
       `${items.map(item => 
-        `• ${item.emoji} ${item.name} (${item.size}) ×${item.quantity} = ₦${(item.price * item.quantity).toLocaleString()}`
+        `• ${item.emoji || '🍦'} ${item.name} (${item.size}) ×${item.quantity} = ₦${(item.price * item.quantity).toLocaleString()}`
       ).join('\n')}\n\n` +
       `💰 *Total: ₦${total.toLocaleString()}*\n\n` +
       `💳 *Payment Details*\n` +
@@ -101,7 +101,7 @@ export const CartDrawer = () => {
                     {items.map(item => (
                       <div key={item.id} className="flex justify-between text-sm py-1 border-b border-pink-100/50">
                         <span className="text-gray-600">
-                          {item.emoji} {item.name} ×{item.quantity}
+                          {item.emoji || '🍦'} {item.name} ×{item.quantity}
                         </span>
                         <span className="font-medium text-pink-500">
                           ₦{(item.price * item.quantity).toLocaleString()}
@@ -231,7 +231,7 @@ export const CartDrawer = () => {
           >
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-pink-100 bg-[rgba(252,228,232,0.3)]">
+              <div className="flex items-center justify-between p-4 border-b border-pink-100 bg-pink-50/30">
                 <div className="flex items-center gap-3">
                   <ShoppingBag size={20} className="text-pink-500" />
                   <h2 className="text-lg font-bold text-gray-800">Your Cart</h2>
@@ -262,7 +262,7 @@ export const CartDrawer = () => {
                     <div key={item.id} className="bg-pink-50/50 rounded-2xl p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm">
-                          {item.emoji}
+                          {item.emoji || '🍦'}
                         </div>
                         
                         <div className="flex-1 min-w-0">
@@ -278,7 +278,7 @@ export const CartDrawer = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                           className="w-7 h-7 rounded-full bg-white shadow-sm hover:bg-pink-50 flex items-center justify-center text-pink-500 transition-colors"
+                            className="w-7 h-7 rounded-full bg-white shadow-sm hover:bg-pink-50 flex items-center justify-center text-pink-500 transition-colors"
                           >
                             <Minus size={12} />
                           </button>
