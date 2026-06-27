@@ -4,69 +4,7 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { CartDrawer } from '../components/CartDrawer';
 import { ProductCard } from '../components/ProductCard';
-
-const products = [
-  {
-    id: 'loaded',
-    name: 'Loaded Ice Cream',
-    description: 'Cookies & chocolate chunks',
-    emoji: '🍪',
-    image: '/images/loaded-1.2l.jpg',
-    sizes: [
-      { id: '330ml', label: '330ml', price: 5000 },
-      { id: '550ml', label: '550ml', price: 8000 },
-      { id: '1.2L', label: '1.2L', price: 16000 },
-    ]
-  },
-  {
-    id: 'oreo',
-    name: 'Oreos & Cream',
-    description: 'Just Oreos',
-    emoji: '🍫',
-    image: '/images/oreo-1.2l.jpg',
-    sizes: [
-      { id: '330ml', label: '330ml', price: 5000 },
-      { id: '550ml', label: '550ml', price: 8000 },
-      { id: '1.2L', label: '1.2L', price: 16000 },
-    ]
-  },
-  {
-    id: 'vanilla',
-    name: 'Plain Vanilla',
-    description: 'Classic vanilla',
-    emoji: '🍦',
-    image: '/images/vanilla-1.2l.jpg',
-    sizes: [
-      { id: '330ml', label: '330ml', price: 5000 },
-      { id: '550ml', label: '550ml', price: 8000 },
-      { id: '1.2L', label: '1.2L', price: 16000 },
-    ]
-  },
-  {
-    id: 'chocolate',
-    name: 'Plain Chocolate',
-    description: 'Rich chocolate',
-    emoji: '🍫',
-    image: '/images/chocolate-1.2l.jpg',
-    sizes: [
-      { id: '330ml', label: '330ml', price: 5000 },
-      { id: '550ml', label: '550ml', price: 8000 },
-      { id: '1.2L', label: '1.2L', price: 16000 },
-    ]
-  },
-  {
-    id: 'loaded-chocolate',
-    name: 'Loaded Chocolate',
-    description: 'Cookies & chocolate chunks',
-    emoji: '🍪',
-    image: '/images/chocolate-loaded-1.2l.jpg',
-    sizes: [
-      { id: '330ml', label: '330ml', price: 5000 },
-      { id: '550ml', label: '550ml', price: 8000 },
-      { id: '1.2L', label: '1.2L', price: 16000 },
-    ]
-  }
-];
+import { products } from '../data/products';
 
 export default function MenuPage() {
   return (
@@ -83,7 +21,7 @@ export default function MenuPage() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product, index) => (
-              <ProductCard key={product.id} {...product} index={index} />
+              <ProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
         </div>
