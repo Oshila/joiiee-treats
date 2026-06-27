@@ -19,13 +19,12 @@ export const Header = () => {
   }, []);
   
   const handleCartOpen = () => {
-    console.log('Opening cart from header');
     setIsOpen(true);
   };
   
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-[rgba(255,255,255,0.9)] backdrop-blur-md shadow-md' : 'bg-transparent'
+      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
     }`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 sm:h-20">
@@ -41,16 +40,31 @@ export const Header = () => {
             </div>
           </Link>
           
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - MORE VISIBLE */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-sm font-medium text-gray-600 hover:text-pink-500 transition-colors">
+            <Link 
+              href="/" 
+              className="text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors duration-300"
+            >
               Home
             </Link>
-            <Link href="/menu" className="text-sm font-medium text-gray-600 hover:text-pink-500 transition-colors">
+            <Link 
+              href="/menu" 
+              className="text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors duration-300"
+            >
               Menu
             </Link>
-            <Link href="/about" className="text-sm font-medium text-gray-600 hover:text-pink-500 transition-colors">
+            <Link 
+              href="/about" 
+              className="text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors duration-300"
+            >
               About
+            </Link>
+            <Link 
+              href="/my-orders" 
+              className="text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors duration-300"
+            >
+              My Orders
             </Link>
           </nav>
           
@@ -73,7 +87,7 @@ export const Header = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-pink-100 transition-colors"
             >
-              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              {isMobileMenuOpen ? <X size={22} className="text-gray-700" /> : <Menu size={22} className="text-gray-700" />}
             </button>
           </div>
         </div>
@@ -82,32 +96,39 @@ export const Header = () => {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-md border-b border-pink-100 shadow-lg">
-          <div className="p-4 space-y-3">
+          <div className="p-4 space-y-2">
             <Link 
               href="/" 
               onClick={() => setIsMobileMenuOpen(false)} 
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors"
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors text-gray-700 hover:text-pink-500 font-medium"
             >
-              <span className="font-medium text-gray-700">Home</span>
+              <span>Home</span>
             </Link>
             <Link 
               href="/menu" 
               onClick={() => setIsMobileMenuOpen(false)} 
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors"
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors text-gray-700 hover:text-pink-500 font-medium"
             >
-              <span className="font-medium text-gray-700">Menu</span>
+              <span>Menu</span>
             </Link>
             <Link 
               href="/about" 
               onClick={() => setIsMobileMenuOpen(false)} 
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors"
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors text-gray-700 hover:text-pink-500 font-medium"
             >
-              <span className="font-medium text-gray-700">About</span>
+              <span>About</span>
             </Link>
-            <div className="pt-3 border-t border-pink-100">
+            <Link 
+              href="/my-orders" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors text-gray-700 hover:text-pink-500 font-medium"
+            >
+              <span>My Orders</span>
+            </Link>
+            <div className="pt-2 border-t border-pink-100">
               <Link 
                 href="/menu" 
-                className="block w-full py-3 bg-gradient-to-r from-pink-400 to-rose-400 text-white font-semibold rounded-xl text-center"
+                className="block w-full py-3 bg-gradient-to-r from-pink-400 to-rose-400 text-white font-semibold rounded-xl text-center hover:shadow-lg transition-all"
               >
                 Order Now
               </Link>

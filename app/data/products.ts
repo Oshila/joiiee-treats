@@ -4,62 +4,45 @@ export const sizes = [
   { id: '1.2L', label: '1.2L', price: 16000 }
 ];
 
-export const toppings = [
-  { 
-    id: 'loaded', 
-    name: 'Loaded Ice Cream', 
+export const products = [
+  {
+    id: 'loaded',
+    name: 'Loaded Ice Cream',
     description: 'Cookies & chocolate chunks',
-    emoji: '🍪'
+    emoji: '🍪',
+    image: '/images/loaded-1.2l.jpg',
+    sizes: sizes,
   },
-  { 
-    id: 'oreo', 
-    name: 'Oreos & Cream', 
+  {
+    id: 'oreo',
+    name: 'Oreos & Cream',
     description: 'Just Oreos',
-    emoji: '🍫'
+    emoji: '🍫',
+    image: '/images/oreo-1.2l.jpg',
+    sizes: sizes,
   },
-  { 
-    id: 'vanilla', 
-    name: 'Plain Vanilla', 
+  {
+    id: 'vanilla',
+    name: 'Plain Vanilla',
     description: 'Classic vanilla',
-    emoji: '🍦'
+    emoji: '🍦',
+    image: '/images/vanilla-1.2l.jpg',
+    sizes: sizes,
   },
-  { 
-    id: 'chocolate', 
-    name: 'Plain Chocolate', 
+  {
+    id: 'chocolate',
+    name: 'Plain Chocolate',
     description: 'Rich chocolate',
-    emoji: '🍫'
+    emoji: '🍫',
+    image: '/images/chocolate-1.2l.jpg',
+    sizes: sizes,
   },
-  { 
-    id: 'loaded-chocolate', 
-    name: 'Loaded Chocolate', 
+  {
+    id: 'loaded-chocolate',
+    name: 'Loaded Chocolate',
     description: 'Cookies & chocolate chunks',
-    emoji: '🍪'
-  }
-];
-
-export const testimonials = [
-  {
-    id: 1,
-    name: 'Sarah Johnson',
-    role: 'Food Blogger',
-    content: 'The loaded chocolate ice cream is absolutely divine! The perfect balance of rich chocolate and crunchy cookies.',
-    rating: 5,
-    avatar: 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=d4697a&color=fff'
-  },
-  {
-    id: 2,
-    name: 'Michael Chen',
-    role: 'Regular Customer',
-    content: "Best ice cream in town! The Oreos & Cream is my go-to. Always fresh and creamy.",
-    rating: 5,
-    avatar: 'https://ui-avatars.com/api/?name=Michael+Chen&background=d4697a&color=fff'
-  },
-  {
-    id: 3,
-    name: 'Amina Williams',
-    role: 'Foodie',
-    content: "I've tried them all and the Vanilla is simply perfect. Real vanilla flavor, not artificial.",
-    rating: 4,
-    avatar: 'https://ui-avatars.com/api/?name=Amina+Williams&background=d4697a&color=fff'
+    emoji: '🍪',
+    image: '/images/chocolate-loaded-1.2l.jpg',
+    sizes: sizes,
   }
 ];

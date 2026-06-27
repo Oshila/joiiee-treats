@@ -8,7 +8,7 @@ interface CartItem {
   size: string;
   price: number;
   quantity: number;
-  emoji: string;  // ← Make sure this is here
+  emoji: string;
 }
 
 interface CartContextType {
@@ -29,19 +29,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   
-  // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('cart');
     if (saved) {
       try {
         setItems(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to load cart:', e);
-      }
+      } catch (e) {}
     }
   }, []);
   
-  // Save to localStorage whenever items change
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(items));
   }, [items]);
@@ -49,7 +45,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addItem = (name: string, size: string, price: number, emoji: string) => {
     const id = `${name}-${size}-${Date.now()}`;
     setItems(prev => {
-      // Check if same item exists (same name and size)
       const existing = prev.find(item => item.name === name && item.size === size);
       if (existing) {
         return prev.map(item => 
@@ -60,7 +55,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { id, name, size, price, quantity: 1, emoji }];
     });
-    // Open cart drawer when adding item
     setIsOpen(true);
   };
   
