@@ -14,14 +14,14 @@ export default function MenuPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-800">
-              Our <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">Menu</span>
+              Our <span className="text-gradient">Menu</span>
             </h1>
             <p className="text-gray-500 mt-2">Choose your favorite flavor and size</p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
+              <ProductCard key={product.id} {...product} index={index} />
             ))}
           </div>
         </div>

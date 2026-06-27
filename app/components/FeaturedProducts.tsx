@@ -18,7 +18,7 @@ export const FeaturedProducts = () => {
             Our Collection
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800">
-            Premium <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">Flavors</span>
+            Premium <span className="text-gradient">Flavors</span>
           </h2>
           <p className="text-gray-500 mt-3 max-w-md mx-auto">
             Discover our most loved ice cream flavors, crafted with premium ingredients
@@ -27,7 +27,7 @@ export const FeaturedProducts = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+            <ProductCard key={product.id} {...product} index={index} />
           ))}
         </div>
       </div>

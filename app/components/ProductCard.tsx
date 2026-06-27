@@ -3,36 +3,27 @@
 import { motion } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
-import { useCart } from '@/app/hooks/useCart';
+import { useCart } from '@/app/providers/CartProvider';
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    emoji: string;
-    image?: string;
-    sizes: { id: string; label: string; price: number }[];
-  };
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  image?: string;
+  sizes: { id: string; label: string; price: number }[];
   index?: number;
 }
 
-export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-  const [quantity, setQuantity] = useState(0);
+export const ProductCard = ({ id, name, description, emoji, image, sizes, index = 0 }: ProductCardProps) => {
+  const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const { addItem } = useCart();
-  
+
   const handleAdd = () => {
-    addItem(product.id, selectedSize.id);
-    setQuantity(prev => prev + 1);
+    addItem(name, selectedSize.label, selectedSize.price, emoji);
+    // You'll see the count update in the cart
   };
-  
-  const handleRemove = () => {
-    if (quantity > 0) {
-      setQuantity(prev => prev - 1);
-    }
-  };
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -43,10 +34,10 @@ export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       className="group bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-pink-100"
     >
       <div className="relative h-56 bg-gradient-to-br from-pink-50 to-pink-100 overflow-hidden">
-        {product.image ? (
+        {image ? (
           <img 
-            src={product.image}
-            alt={product.name}
+            src={image}
+            alt={name}
             className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-110"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
@@ -54,7 +45,7 @@ export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           />
         ) : null}
         <div className="absolute inset-0 flex items-center justify-center text-7xl opacity-10 pointer-events-none">
-          {product.emoji}
+          {emoji}
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent">
@@ -62,8 +53,8 @@ export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
               {selectedSize.label}
             </span>
-            <span className="text-white text-sm font-semibold bg-pink-500/80 backdrop-blur-sm px-3 py-1 rounded-full">
-              {product.name}
+            <span className="text-white text-sm font-semibold bg-pink-500/80 px-3 py-1 rounded-full">
+              {name}
             </span>
           </div>
         </div>
@@ -75,14 +66,14 @@ export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       
       <div className="p-5">
         <h3 className="text-lg font-bold text-gray-800 group-hover:text-pink-500 transition-colors">
-          {product.name}
+          {name}
         </h3>
         <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-          {product.description}
+          {description}
         </p>
         
         <div className="flex gap-2 mt-4 flex-wrap">
-          {product.sizes.map(size => (
+          {sizes.map(size => (
             <button
               key={size.id}
               onClick={() => setSelectedSize(size)}
@@ -98,33 +89,17 @@ export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         </div>
         
         <div className="flex items-center justify-between mt-5 pt-4 border-t border-pink-100">
-          <div>
-            <span className="text-2xl font-bold text-pink-500">
-              ₦{selectedSize.price.toLocaleString()}
-            </span>
-            <span className="text-xs text-gray-400 ml-1">/ tub</span>
-          </div>
+          <span className="text-2xl font-bold text-pink-500">
+            ₦{selectedSize.price.toLocaleString()}
+          </span>
           
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRemove}
-              className="w-9 h-9 rounded-full bg-pink-50 hover:bg-pink-100 flex items-center justify-center disabled:opacity-50 transition-colors"
-              disabled={quantity === 0}
-            >
-              <Minus size={16} className="text-pink-500" />
-            </button>
-            
-            <span className="w-10 text-center text-base font-bold text-gray-700">
-              {quantity}
-            </span>
-            
-            <button
-              onClick={handleAdd}
-              className="w-9 h-9 rounded-full bg-pink-400 hover:bg-pink-500 flex items-center justify-center shadow-md hover:shadow-lg transition-all"
-            >
-              <Plus size={16} className="text-white" />
-            </button>
-          </div>
+          <button
+            onClick={handleAdd}
+            className="px-4 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors flex items-center gap-2 shadow-md"
+          >
+            <Plus size={16} />
+            Add to Cart
+          </button>
         </div>
       </div>
     </motion.div>
