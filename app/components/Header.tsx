@@ -21,7 +21,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-black border-b border-neutral-800">
+      <header className="sticky top-0 z-40 bg-black border-b border-[var(--border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
 
@@ -29,7 +29,7 @@ export function Header() {
             <div className="flex items-center gap-8">
               <Link
                 href="/"
-                className="text-[17px] font-semibold tracking-tight text-black hover:text-black"
+                className="text-[17px] font-semibold tracking-tight text-white"
               >
                 Shop With Me
               </Link>
@@ -39,7 +39,7 @@ export function Header() {
                   <Link
                     key={n.href}
                     href={n.href}
-                    className="text-[13.5px] font-medium text-neutral-500 hover:text-black transition-colors"
+                    className="text-[13.5px] font-medium text-[var(--muted)] hover:text-white transition-colors"
                   >
                     {n.label}
                   </Link>
@@ -52,7 +52,7 @@ export function Header() {
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
                 aria-label="Search"
-                className="p-2.5 text-neutral-700 hover:text-black hover:bg-neutral-100 rounded-md transition-colors"
+                className="p-2.5 text-[var(--muted)] hover:text-white hover:bg-[var(--hover)] rounded-md transition-colors"
               >
                 <Search size={18} strokeWidth={1.75} />
               </button>
@@ -60,11 +60,11 @@ export function Header() {
               <button
                 onClick={() => setIsOpen(true)}
                 aria-label="Cart"
-                className="relative p-2.5 text-neutral-700 hover:text-black hover:bg-neutral-100 rounded-md transition-colors"
+                className="relative p-2.5 text-[var(--muted)] hover:text-white hover:bg-[var(--hover)] rounded-md transition-colors"
               >
                 <ShoppingBag size={18} strokeWidth={1.75} />
                 {itemCount > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 text-[10px] font-semibold bg-black text-white rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 text-[10px] font-semibold bg-white text-black rounded-full flex items-center justify-center">
                     {itemCount}
                   </span>
                 )}
@@ -73,7 +73,7 @@ export function Header() {
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label="Menu"
-                className="md:hidden p-2.5 text-neutral-700 hover:text-black hover:bg-neutral-100 rounded-md transition-colors"
+                className="md:hidden p-2.5 text-[var(--muted)] hover:text-white hover:bg-[var(--hover)] rounded-md transition-colors"
               >
                 {mobileOpen ? <X size={18} strokeWidth={1.75} /> : <Menu size={18} strokeWidth={1.75} />}
               </button>
@@ -84,7 +84,7 @@ export function Header() {
 
         {/* Search Bar */}
         {searchOpen && (
-          <div className="border-t border-neutral-200 bg-white">
+          <div className="border-t border-[var(--border)] bg-black">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
               <form
                 onSubmit={(e) => {
@@ -100,7 +100,7 @@ export function Header() {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search products"
                   autoFocus
-                  className="w-full px-3 py-2.5 border border-neutral-200 rounded-md text-sm text-black placeholder-neutral-400 focus:border-black transition-colors"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-md text-sm text-white placeholder-[var(--muted)] bg-[var(--hover)] focus:border-white transition-colors"
                 />
               </form>
             </div>
@@ -109,14 +109,14 @@ export function Header() {
 
         {/* Mobile Nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-neutral-200 bg-white">
+          <div className="md:hidden border-t border-[var(--border)] bg-black">
             <div className="px-4 py-2 flex flex-col">
               {nav.map((n) => (
                 <Link
                   key={n.href}
                   href={n.href}
                   onClick={() => setMobileOpen(false)}
-                  className="py-3 text-sm font-medium text-neutral-600 hover:text-black transition-colors border-b border-neutral-100 last:border-0"
+                  className="py-3 text-sm font-medium text-[var(--muted)] hover:text-white transition-colors border-b border-[var(--border)] last:border-0"
                 >
                   {n.label}
                 </Link>
