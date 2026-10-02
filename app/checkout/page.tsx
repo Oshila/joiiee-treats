@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCart } from '@/app/providers/CartProvider';
-import { saveOrder } from '@/app/services/orderservice';
-import { Header } from '@/app/components/Header';
-import { Footer } from '@/app/components/Footer';
-import { User, Phone, MapPin, Mail, ArrowLeft, CheckCircle, Package, Truck, Clock } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Header } from "@/app/components/Header";
+import { Footer } from "@/app/components/Footer";
+import { CartDrawer } from "@/app/components/CartDrawer";
+import { useCart } from "@/app/providers/CartProvider";
+import { saveOrder, generateOrderNumber } from "@/app/services/orderService";
+import { sendOrderToTelegram } from "@/app/services/telegramService";
+import { ArrowLeft } from "lucide-react";
 
 declare global {
   interface Window {
@@ -18,315 +20,200 @@ declare global {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, total, clearCart } = useCart();
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: ''
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    notes: "",
   });
-  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [orderNumber, setOrderNumber] = useState('');
-  const [orderId, setOrderId] = useState('');
-  const [error, setError] = useState('');
-  const [paymentReference, setPaymentReference] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
+  const [error, setError] = useState("");
+
+  // Delivery is quoted separately after the order is placed.
+  const deliveryFee = 0;
+  const grandTotal = total;
 
   useEffect(() => {
-    if (items.length === 0 && !paymentSuccess) {
-      router.push('/');
-    }
-  }, [items, router, paymentSuccess]);
+    if (items.length === 0 && !success) router.push("/shop");
+  }, [items, router, success]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handlePaymentSuccess = async (response: any) => {
-    console.log('Payment successful:', response);
-    
-    const orderNum = `JOI-${Date.now().toString().slice(-4)}`;
-    setOrderNumber(orderNum);
-    setPaymentReference(response.reference || 'N/A');
-    
-    const orderData = {
-      orderNumber: orderNum,
-      customer: {
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        address: formData.address
-      },
-      items: items.map(item => ({
-        name: item.name,
-        size: item.size,
-        quantity: item.quantity,
-        price: item.price,
-        emoji: item.emoji
-      })),
-      total: total,
-      paymentReference: response.reference || 'N/A',
-      status: 'pending' as const,
-      notes: notes || ''
-    };
-
-    try {
-      console.log('Saving order to Firestore...');
-      const result = await saveOrder(orderData);
-      console.log('Save result:', result);
-      
-      if (result.success) {
-        localStorage.setItem('lastOrder', JSON.stringify({
-          orderNumber: orderNum,
-          orderId: result.id,
-          customerName: formData.name,
-          total: total,
-          timestamp: new Date().toISOString()
-        }));
-        
-        setOrderId(result.id || '');
-        setPaymentSuccess(true);
-        clearCart();
-        setLoading(false);
-      } else {
-        console.error('Failed to save order:', result.error);
-        setError(`Payment successful but order could not be saved: ${result.error || 'Unknown error'}`);
-        setLoading(false);
-      }
-    } catch (err: any) {
-      console.error('Error saving order:', err);
-      setError(`Error saving order: ${err.message || 'Unknown error'}`);
-      setLoading(false);
-    }
-  };
-
-  const handlePaystackPayment = () => {
-    if (!formData.name || !formData.phone || !formData.email || !formData.address) {
-      setError('Please fill in all fields');
+  const handlePayment = () => {
+    if (
+      !form.name ||
+      !form.email ||
+      !form.phone ||
+      !form.address ||
+      !form.city ||
+      !form.state
+    ) {
+      setError("Please fill in all fields");
       return;
     }
-    
-    setError('');
+    setError("");
     setLoading(true);
 
-    if (typeof window !== 'undefined' && window.PaystackPop) {
-      openPaystack();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://js.paystack.co/v1/inline.js';
-    script.async = true;
-    
-    script.onload = () => {
-      console.log('Paystack script loaded');
-      openPaystack();
-    };
-    
-    script.onerror = () => {
-      setError('Failed to load payment gateway. Please try again.');
-      setLoading(false);
-    };
-    
-    document.body.appendChild(script);
-  };
-
-  const openPaystack = () => {
-    try {
-      const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-      
-      if (!publicKey || publicKey === '') {
-        setError('Payment configuration error. Please contact support.');
+    const load = () => {
+      const key = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+      if (!key) {
+        setError("Payment not configured");
         setLoading(false);
         return;
       }
 
-      console.log('Opening Paystack');
-
       const handler = window.PaystackPop.setup({
-        key: publicKey,
-        email: formData.email,
-        amount: total * 100,
-        currency: 'NGN',
-        ref: `JOI-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+        key,
+        email: form.email,
+        amount: grandTotal * 100,
+        currency: "NGN",
+        ref: `SWM-${Date.now()}`,
         metadata: {
           custom_fields: [
-            {
-              display_name: "Customer Name",
-              variable_name: "customer_name",
-              value: formData.name
-            },
-            {
-              display_name: "Phone",
-              variable_name: "phone",
-              value: formData.phone
-            },
-            {
-              display_name: "Address",
-              variable_name: "address",
-              value: formData.address
-            }
-          ]
+            { display_name: "Name", variable_name: "name", value: form.name },
+            { display_name: "Phone", variable_name: "phone", value: form.phone },
+          ],
         },
-        callback: function(response: any) {
-          console.log('Paystack callback received:', response);
-          setLoading(false);
-          handlePaymentSuccess(response);
-        },
-        onClose: function() {
-          console.log('Paystack modal closed');
-          setLoading(false);
-        }
+        callback: (res: any) => handleSuccess(res),
+        onClose: () => setLoading(false),
       });
-
       handler.openIframe();
-    } catch (err) {
-      console.error('Paystack error:', err);
-      setError('Payment failed. Please try again.');
-      setLoading(false);
+    };
+
+    if (window.PaystackPop) load();
+    else {
+      const s = document.createElement("script");
+      s.src = "https://js.paystack.co/v1/inline.js";
+      s.onload = load;
+      s.onerror = () => {
+        setError("Failed to load payment");
+        setLoading(false);
+      };
+      document.body.appendChild(s);
     }
   };
 
-  // Success page
-  if (paymentSuccess) {
+  const handleSuccess = async (res: any) => {
+    const num = generateOrderNumber();
+    setOrderNumber(num);
+
+    const order = {
+      orderNumber: num,
+      customer: {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        state: form.state,
+      },
+      items: items.map((i) => ({
+        id: i.id,
+        name: i.name,
+        size: i.size,
+        price: i.price,
+        quantity: i.quantity,
+        image: i.image,
+      })),
+      subtotal: total,
+      deliveryFee: 0,
+      total: grandTotal,
+      paymentReference: res.reference || "N/A",
+      paymentStatus: "paid" as const,
+      status: "pending" as const,
+      notes: form.notes,
+    };
+
+    const saved = await saveOrder(order);
+    if (saved.success) {
+      try {
+        await sendOrderToTelegram(order as any);
+      } catch {}
+      localStorage.setItem(
+        "lastOrder",
+        JSON.stringify({
+          orderNumber: num,
+          phone: form.phone,
+          timestamp: Date.now(),
+        })
+      );
+      setSuccess(true);
+      clearCart();
+    } else {
+      setError("Payment succeeded but order could not save. Contact support.");
+    }
+    setLoading(false);
+  };
+
+  if (success) {
     return (
       <>
         <Header />
-        <main className="pt-24 pb-20 min-h-screen bg-gradient-to-b from-pink-50 to-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-pink-100">
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle size={40} className="text-green-500" />
-                </div>
-                <h1 className="text-3xl font-bold text-gray-800">Payment Successful! 🎉</h1>
-                <p className="text-gray-500 mt-2">Thank you for your order</p>
-              </div>
+        <main className="max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
+          <div className="w-14 h-14 mx-auto mb-6 rounded-full border-2 border-white flex items-center justify-center">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-medium mb-2 text-white">
+            Order Confirmed
+          </h1>
+          <p className="text-sm text-neutral-400 mb-8">
+            Thank you. We've received your order.
+          </p>
 
-              <div className="bg-pink-50 rounded-2xl p-6 mb-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Order Number</p>
-                    <p className="text-2xl font-bold text-pink-500">{orderNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Payment Reference</p>
-                    <p className="text-sm font-mono text-gray-700">{paymentReference}</p>
-                  </div>
-                </div>
-              </div>
+          <div className="border border-neutral-800 rounded-lg p-6 mb-6 text-left">
+            <p className="text-xs tracking-[0.2em] uppercase text-neutral-400 mb-2">
+              Order Number
+            </p>
+            <p className="text-xl font-medium mb-4 text-white">
+              {orderNumber}
+            </p>
+            <p className="text-xs text-neutral-400">
+              Save this number to track your order. We've also notified our team.
+            </p>
+          </div>
 
-              <div className="bg-blue-50 rounded-2xl p-4 mb-6 border border-blue-200">
-                <p className="text-sm text-gray-700 mb-2 font-medium">📌 Save this link to track your order:</p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <input
-                    type="text"
-                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}/order/${orderNumber}`}
-                    readOnly
-                    className="flex-1 px-4 py-2 bg-white rounded-xl border border-gray-300 text-gray-700 text-sm min-w-[200px]"
-                  />
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/order/${orderNumber}`);
-                      alert('✅ Link copied to clipboard!');
-                    }}
-                    className="px-4 py-2 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition-colors text-sm font-medium"
-                  >
-                    Copy Link
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">💡 Bookmark this link to check your order status anytime</p>
-              </div>
+          <div className="border border-neutral-800 rounded-lg p-6 mb-8 text-left">
+            <p className="text-xs tracking-[0.2em] uppercase text-neutral-400 mb-3">
+              Delivery
+            </p>
+            <p className="text-sm text-white leading-relaxed">
+              We'll contact you within 24 hours with your delivery fee based on
+              your location. You can then pay the rider directly or we'll send
+              a separate payment link.
+            </p>
+          </div>
 
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-700 mb-4">Order Status</h3>
-                <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                      <CheckCircle size={16} className="text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">Order Placed</span>
-                  </div>
-                  <div className="w-12 h-0.5 bg-gray-300 flex-shrink-0" />
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Package size={16} className="text-gray-500" />
-                    </div>
-                    <span className="text-sm text-gray-400">Processing</span>
-                  </div>
-                  <div className="w-12 h-0.5 bg-gray-300 flex-shrink-0" />
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Truck size={16} className="text-gray-500" />
-                    </div>
-                    <span className="text-sm text-gray-400">Delivery</span>
-                  </div>
-                  <div className="w-12 h-0.5 bg-gray-300 flex-shrink-0" />
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Clock size={16} className="text-gray-500" />
-                    </div>
-                    <span className="text-sm text-gray-400">Completed</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-pink-100 pt-6 mb-6">
-                <h3 className="font-semibold text-gray-700 mb-3">Order Items</h3>
-                <div className="space-y-2">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm py-1 border-b border-pink-50">
-                      <span className="text-gray-700">{item.emoji} {item.name} ({item.size}) ×{item.quantity}</span>
-                      <span className="font-medium text-gray-700">₦{(item.price * item.quantity).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-between font-bold text-lg pt-3 border-t border-pink-100 mt-3">
-                  <span className="text-gray-800">Total</span>
-                  <span className="text-pink-500">₦{total.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-                <h3 className="font-semibold text-gray-700 mb-2">Delivery Details</h3>
-                <div className="grid md:grid-cols-2 gap-2 text-sm">
-                  <p className="text-gray-700"><span className="text-gray-500">Name:</span> {formData.name}</p>
-                  <p className="text-gray-700"><span className="text-gray-500">Phone:</span> {formData.phone}</p>
-                  <p className="md:col-span-2 text-gray-700"><span className="text-gray-500">Address:</span> {formData.address}</p>
-                  {notes && (
-                    <p className="md:col-span-2 text-gray-700"><span className="text-gray-500">Notes:</span> {notes}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href={`/order/${orderNumber}`}
-                  className="flex-1 py-3 bg-pink-500 text-white font-semibold rounded-xl hover:bg-pink-600 transition-colors text-center"
-                >
-                  🔍 Track Order
-                </Link>
-                <a
-                  href={`https://wa.me/2348163126734?text=${encodeURIComponent(
-                    `Hi, I just placed order #${orderNumber}. My name is ${formData.name}. Please confirm my order.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors text-center"
-                >
-                  💬 Contact Us
-                </a>
-                <Link
-                  href="/"
-                  className="flex-1 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors text-center"
-                >
-                  🏠 Home
-                </Link>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href={`/order/${orderNumber}`}
+              className="inline-flex justify-center bg-white text-black px-6 py-3 text-sm font-medium rounded-md hover:bg-neutral-200 transition-colors"
+            >
+              View Order
+            </Link>
+            <Link
+              href="/shop"
+              className="inline-flex justify-center border border-neutral-800 text-white px-6 py-3 text-sm font-medium rounded-md hover:bg-neutral-900 transition-colors"
+            >
+              Continue Shopping
+            </Link>
           </div>
         </main>
         <Footer />
@@ -334,133 +221,153 @@ export default function CheckoutPage() {
     );
   }
 
-  // Checkout Form
   return (
     <>
       <Header />
-      <main className="pt-24 pb-20 min-h-screen bg-gradient-to-b from-pink-50 to-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-pink-500 hover:text-pink-600 transition-colors mb-6">
-            <ArrowLeft size={20} />
-            Back to Menu
-          </Link>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
-              <div className="bg-white rounded-3xl p-6 shadow-md border border-pink-100 sticky top-24">
-                <h3 className="font-bold text-gray-800 mb-4">Order Summary</h3>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm py-1 border-b border-pink-50">
-                      <span className="text-gray-700">{item.emoji} {item.name} ×{item.quantity}</span>
-                      <span className="font-medium text-gray-700">₦{(item.price * item.quantity).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t border-pink-100 mt-3 pt-3">
-                  <div className="flex justify-between font-bold text-lg">
-                    <span className="text-gray-800">Total</span>
-                    <span className="text-pink-500">₦{total.toLocaleString()}</span>
-                  </div>
-                </div>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <Link
+          href="/shop"
+          className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white mb-6 transition-colors"
+        >
+          <ArrowLeft size={14} /> Back to shop
+        </Link>
+
+        <h1 className="text-3xl font-medium tracking-tight mb-8 text-white">
+          Checkout
+        </h1>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="md:col-span-2 space-y-6">
+            <div>
+              <h2 className="text-sm font-medium mb-4 pb-3 border-b border-neutral-800 text-white">
+                Contact Information
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Full name"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors"
+                />
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors"
+                />
+                <input
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="Phone number"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors sm:col-span-2"
+                />
               </div>
             </div>
-            
-            <div className="md:col-span-2">
-              <div className="bg-white rounded-3xl p-6 shadow-md border border-pink-100">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Checkout</h2>
-                
-                <div className="space-y-4">
-                  {error && (
-                    <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl">
-                      ❌ {error}
-                    </div>
-                  )}
 
-                  <div className="relative">
-                    <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Full name *"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-pink-400 focus:outline-none transition-colors text-gray-700 placeholder-gray-600"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="relative">
-                    <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="Phone number *"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-pink-400 focus:outline-none transition-colors text-gray-700 placeholder-gray-600"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="relative">
-                    <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email address *"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-pink-400 focus:outline-none transition-colors text-gray-700 placeholder-gray-600"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="relative">
-                    <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      name="address"
-                      placeholder="Delivery address *"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:border-pink-400 focus:outline-none transition-colors text-gray-700 placeholder-gray-600"
-                      required
-                    />
-                  </div>
+            <div>
+              <h2 className="text-sm font-medium mb-4 pb-3 border-b border-neutral-800 text-white">
+                Delivery Address
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  name="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  placeholder="Street address"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors sm:col-span-2"
+                />
+                <input
+                  name="city"
+                  value={form.city}
+                  onChange={handleChange}
+                  placeholder="City"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors"
+                />
+                <input
+                  name="state"
+                  value={form.state}
+                  onChange={handleChange}
+                  placeholder="State"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors"
+                />
+                <textarea
+                  name="notes"
+                  value={form.notes}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Order notes (optional)"
+                  className="px-3 py-2.5 border border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 rounded-md text-sm focus:border-white focus:outline-none transition-colors sm:col-span-2 resize-none"
+                />
+              </div>
+            </div>
+          </div>
 
-                  <div className="relative">
-                    <textarea
-                      name="notes"
-                      placeholder="📝 Special instructions or delivery notes (optional)"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      rows={2}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-pink-400 focus:outline-none transition-colors text-gray-700 placeholder-gray-600 resize-none"
-                    />
-                  </div>
+          <div>
+            <div className="border border-neutral-800 rounded-lg p-5 sticky top-24 bg-black">
+              <h2 className="text-sm font-medium mb-4 text-white">
+                Order Summary
+              </h2>
 
-                  <button
-                    onClick={handlePaystackPayment}
-                    disabled={!formData.name || !formData.phone || !formData.email || !formData.address || loading}
-                    className="w-full py-4 bg-gradient-to-r from-pink-400 to-rose-400 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              <div className="space-y-3 mb-5 max-h-60 overflow-y-auto">
+                {items.map((i) => (
+                  <div
+                    key={`${i.id}-${i.size}`}
+                    className="flex justify-between text-sm gap-3"
                   >
-                    {loading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="animate-spin">⏳</span>
-                        Processing...
-                      </span>
-                    ) : (
-                      `Pay ₦${total.toLocaleString()} with Paystack`
-                    )}
-                  </button>
+                    <span className="text-neutral-400 line-clamp-1">
+                      {i.name} x{i.quantity}
+                    </span>
+                    <span className="text-white whitespace-nowrap">
+                      ₦{(i.price * i.quantity).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-neutral-800 pt-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-neutral-400">Subtotal</span>
+                  <span className="text-white">₦{total.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <span className="text-neutral-400">Delivery</span>
+                  <span className="text-neutral-400 text-right text-xs max-w-[160px]">
+                    Quoted separately after order
+                  </span>
+                </div>
+                <div className="flex justify-between pt-3 border-t border-neutral-800 text-base font-medium">
+                  <span className="text-white">Total</span>
+                  <span className="text-white">
+                    ₦{grandTotal.toLocaleString()}
+                  </span>
                 </div>
               </div>
+
+              {error && <p className="text-xs text-red-500 mt-4">{error}</p>}
+
+              <button
+                onClick={handlePayment}
+                disabled={loading}
+                className="w-full mt-5 bg-white text-black py-3.5 text-sm font-medium rounded-md hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading
+                  ? "Processing..."
+                  : `Pay ₦${grandTotal.toLocaleString()}`}
+              </button>
+
+              <p className="text-[10px] text-neutral-500 mt-3 text-center">
+                Secure payment via Paystack
+              </p>
             </div>
           </div>
         </div>
       </main>
       <Footer />
+      <CartDrawer />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from './providers/CartProvider';
+import { CartProvider } from "./providers/CartProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,21 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "joiiee.treats - Premium Ice Cream",
-  description: "Crafted with love, delivered with joy.",
+  title: "Shop With Me — Modern Essentials",
+  description: "Curated tech, accessories, and pre-order drops. Fast delivery across Nigeria.",
+  keywords: "shop, ecommerce, tech, accessories, nigeria",
+  openGraph: {
+    title: "Shop With Me",
+    description: "Curated tech, accessories, and pre-order drops.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );

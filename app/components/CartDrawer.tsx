@@ -1,138 +1,163 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
-import { useCart } from '@/app/providers/CartProvider';
-import Link from 'next/link';
+import Link from "next/link";
+import { useCart } from "@/app/providers/CartProvider";
+import { X, Minus, Plus, Trash2 } from "lucide-react";
 
-export const CartDrawer = () => {
-  const { items, removeItem, updateQuantity, total, itemCount, clearCart, isOpen, setIsOpen } = useCart();
+export function CartDrawer() {
+  const {
+    items,
+    removeItem,
+    updateQuantity,
+    total,
+    itemCount,
+    isOpen,
+    setIsOpen,
+  } = useCart();
+
+  if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={() => setIsOpen(false)}
+      />
+
+      {/* Drawer */}
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white flex flex-col shadow-2xl border-l border-neutral-200">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200 bg-white">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-[15px] font-semibold text-black">Cart</h2>
+            <span className="text-[13px] text-neutral-500">
+              {itemCount} {itemCount === 1 ? "item" : "items"}
+            </span>
+          </div>
+          <button
             onClick={() => setIsOpen(false)}
-          />
-          
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-50 shadow-2xl"
+            className="p-1.5 text-black hover:bg-neutral-100 rounded-md transition-colors"
+            aria-label="Close cart"
           >
-            <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-4 border-b border-pink-100 bg-pink-50/30">
-                <div className="flex items-center gap-3">
-                  <ShoppingBag size={20} className="text-pink-500" />
-                  <h2 className="text-lg font-bold text-gray-800">Your Cart</h2>
-                  <span className="text-xs bg-pink-400 text-white px-2 py-0.5 rounded-full">
-                    {itemCount} items
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 hover:bg-pink-100 rounded-full transition-colors"
-                >
-                  <X size={20} className="text-gray-500" />
-                </button>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {items.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
-                      🍦
-                    </div>
-                    <p className="text-gray-500">Your cart is empty</p>
-                    <p className="text-sm text-gray-400">Add some delicious ice cream!</p>
-                  </div>
-                ) : (
-                  items.map((item) => (
-                    <div key={item.id} className="bg-pink-50/50 rounded-2xl p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm">
-                          {item.emoji || '🍦'}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-gray-800 text-sm truncate">
-                            {item.name}
-                          </p>
-                          <p className="text-xs text-gray-500">{item.size}</p>
-                          <p className="text-sm font-bold text-pink-500">
-                            ₦{item.price.toLocaleString()}
-                          </p>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 rounded-full bg-white shadow-sm hover:bg-pink-50 flex items-center justify-center text-pink-500 transition-colors"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          
-                          <span className="w-6 text-center text-sm font-semibold">
-                            {item.quantity}
-                          </span>
-                          
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 rounded-full bg-pink-400 hover:bg-pink-500 flex items-center justify-center text-white transition-colors shadow-sm"
-                          >
-                            <Plus size={12} />
-                          </button>
-                          
-                          <button
-                            onClick={() => removeItem(item.id)}
-                            className="p-1.5 hover:bg-red-50 rounded-lg transition-colors text-gray-400 hover:text-red-500"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              
-              {items.length > 0 && (
-                <div className="border-t border-pink-100 p-4 bg-white">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-600">Total</span>
-                    <span className="text-2xl font-bold text-pink-500">
-                      ₦{total.toLocaleString()}
-                    </span>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <button
-                      onClick={clearCart}
-                      className="flex-1 py-3 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
-                    >
-                      Clear
-                    </button>
-                    <Link
-                      href="/checkout"
-                      onClick={() => setIsOpen(false)}
-                      className="flex-1 py-3 bg-gradient-to-r from-pink-400 to-rose-400 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all text-center"
-                    >
-                      Checkout
-                    </Link>
-                  </div>
-                </div>
-              )}
+            <X size={18} strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto bg-white">
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center px-6">
+              <p className="text-[14px] text-neutral-600 mb-4">
+                Your cart is empty
+              </p>
+              <Link
+                href="/shop"
+                onClick={() => setIsOpen(false)}
+                className="text-[13px] font-medium text-black underline underline-offset-4"
+              >
+                Continue shopping
+              </Link>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          ) : (
+            <div className="divide-y divide-neutral-200">
+              {items.map((item) => (
+                <div
+                  key={`${item.id}-${item.size}`}
+                  className="p-5 flex gap-4"
+                >
+                  {/* Image */}
+                  <div className="w-20 h-20 bg-neutral-100 rounded-md overflow-hidden flex-shrink-0 border border-neutral-200">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.png";
+                      }}
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-[14px] font-medium text-black line-clamp-1">
+                          {item.name}
+                        </p>
+                        <p className="text-[12px] text-neutral-500 mt-0.5">
+                          {item.size}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => removeItem(item.id, item.size)}
+                        className="p-1 text-neutral-500 hover:text-black hover:bg-neutral-100 rounded-md self-start transition-colors"
+                        aria-label="Remove item"
+                      >
+                        <Trash2 size={14} strokeWidth={2} />
+                      </button>
+                    </div>
+
+                    {/* Qty + Price */}
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center border border-neutral-300 rounded-md">
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.id, item.size, item.quantity - 1)
+                          }
+                          className="p-1.5 text-black hover:bg-neutral-100 transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus size={12} strokeWidth={2.5} />
+                        </button>
+                        <span className="text-[13px] font-medium text-black w-8 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.id, item.size, item.quantity + 1)
+                          }
+                          className="p-1.5 text-black hover:bg-neutral-100 transition-colors disabled:opacity-30"
+                          disabled={item.quantity >= item.stock}
+                          aria-label="Increase quantity"
+                        >
+                          <Plus size={12} strokeWidth={2.5} />
+                        </button>
+                      </div>
+                      <span className="text-[14px] font-semibold text-black">
+                        ₦{(item.price * item.quantity).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        {items.length > 0 && (
+          <div className="border-t border-neutral-200 p-5 space-y-3 bg-white">
+            <div className="flex justify-between text-[14px]">
+              <span className="text-neutral-600">Subtotal</span>
+              <span className="font-semibold text-black">
+                ₦{total.toLocaleString()}
+              </span>
+            </div>
+            <p className="text-[12px] text-neutral-500">
+              Delivery calculated at checkout
+            </p>
+            <Link
+              href="/checkout"
+              onClick={() => setIsOpen(false)}
+              className="block w-full text-center bg-black text-white py-3.5 text-[14px] font-medium rounded-md hover:bg-neutral-800 transition-colors"
+            >
+              Checkout
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
   );
-};
+}

@@ -1,62 +1,53 @@
-'use client';
+import Link from "next/link";
 
-import Link from 'next/link';
-import { Heart } from 'lucide-react';
-
-export const Footer = () => {
+export function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🍦</span>
-              <span className="text-xl font-bold text-white">joiiee.treats</span>
-            </div>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Premium artisanal ice cream crafted with love and the finest ingredients.
+    <footer className="border-t border-[var(--border)] mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="col-span-2 md:col-span-1">
+            <p className="text-base font-semibold tracking-tight mb-3">
+              Shop With Me
+            </p>
+            <p className="text-sm text-[var(--muted)] max-w-xs">
+              Curated tech and accessories. Fast delivery across Nigeria.
             </p>
           </div>
-          
-          {/* Quick Links */}
+
           <div>
-            <h4 className="text-white font-semibold mb-3">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/menu" className="hover:text-pink-400 transition-colors">Menu</Link></li>
-              <li><Link href="/about" className="hover:text-pink-400 transition-colors">About Us</Link></li>
+            <p className="text-sm font-medium mb-3">Shop</p>
+            <ul className="space-y-2 text-sm text-[var(--muted)]">
+              <li><Link href="/shop" className="hover:text-[var(--fg)]">All Products</Link></li>
+              <li><Link href="/shop?category=tech" className="hover:text-[var(--fg)]">Tech</Link></li>
+              <li><Link href="/shop?category=accessories" className="hover:text-[var(--fg)]">Accessories</Link></li>
+              <li><Link href="/shop?category=preorder" className="hover:text-[var(--fg)]">Pre-Order</Link></li>
             </ul>
           </div>
-          
-          {/* Flavors */}
+
           <div>
-            <h4 className="text-white font-semibold mb-3">Popular Flavors</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="hover:text-pink-400 transition-colors cursor-pointer">Loaded Ice Cream</li>
-              <li className="hover:text-pink-400 transition-colors cursor-pointer">Oreos & Cream</li>
-              <li className="hover:text-pink-400 transition-colors cursor-pointer">Plain Vanilla</li>
-              <li className="hover:text-pink-400 transition-colors cursor-pointer">Loaded Chocolate</li>
+            <p className="text-sm font-medium mb-3">Help</p>
+            <ul className="space-y-2 text-sm text-[var(--muted)]">
+              <li><Link href="/track" className="hover:text-[var(--fg)]">Track Order</Link></li>
+              <li><Link href="/contact" className="hover:text-[var(--fg)]">Contact</Link></li>
+              <li><Link href="/returns" className="hover:text-[var(--fg)]">Returns</Link></li>
             </ul>
           </div>
-          
-          {/* Contact */}
+
           <div>
-            <h4 className="text-white font-semibold mb-3">Get in Touch</h4>
-            <ul className="space-y-2 text-sm">
-              <li>📱 +234 816 312 6734</li>
-              <li>📧 hello@joiiee.com</li>
-              <li>📍 Lagos, Nigeria</li>
+            <p className="text-sm font-medium mb-3">Follow</p>
+            <ul className="space-y-2 text-sm text-[var(--muted)]">
+              <li><a href="#" className="hover:text-[var(--fg)]">Instagram</a></li>
+              <li><a href="#" className="hover:text-[var(--fg)]">Twitter</a></li>
+              <li><a href="#" className="hover:text-[var(--fg)]">TikTok</a></li>
             </ul>
           </div>
         </div>
-        
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>© 2026 joiiee.treats. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-           OshilaTech
-          </p>
+
+        <div className="mt-10 pt-6 border-t border-[var(--border)] flex flex-col sm:flex-row justify-between gap-2 text-xs text-[var(--muted)]">
+          <p>© {new Date().getFullYear()} Shop With Me. All rights reserved.</p>
+          <Link href="/admin" className="hover:text-[var(--fg)]">Admin</Link>
         </div>
       </div>
     </footer>
   );
-};
+}
