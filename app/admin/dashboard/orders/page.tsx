@@ -50,7 +50,7 @@ export default function OrdersPage() {
             onClick={() => setFilter(s)}
             className={`text-xs px-3 py-1.5 rounded-md border capitalize transition-colors ${
               filter === s
-                ? "bg-black text-white border-black"
+                ? "bg-white text-black border-black"
                 : "border-[var(--border)] hover:bg-[var(--hover)]"
             }`}
           >
@@ -124,7 +124,7 @@ export default function OrdersPage() {
             className="absolute inset-0 bg-black/30"
             onClick={() => setSelected(null)}
           />
-          <div className="relative bg-white rounded-lg border border-[var(--border)] max-w-lg w-full max-h-[80vh] overflow-y-auto p-6">
+          <div className="relative bg-black rounded-lg border border-[var(--border)] max-w-lg w-full max-h-[80vh] overflow-y-auto p-6">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <p className="text-xs uppercase tracking-wider text-[var(--muted)]">

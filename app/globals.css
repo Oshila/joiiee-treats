@@ -90,3 +90,32 @@ svg {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+/* Admin tables and wide content scroll internally, not the whole page */
+.admin-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-scroll table {
+  min-width: 640px;
+}
+
+/* Prevent any admin page from forcing horizontal page scroll */
+.lg\:ml-56 {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Tables inside admin scroll horizontally on narrow screens */
+main table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  main table {
+    display: table;
+    white-space: normal;
+  }
+}

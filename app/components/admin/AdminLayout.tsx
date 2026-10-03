@@ -56,7 +56,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     href === "/admin/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black w-full overflow-x-hidden">
 
       {/* ─── Mobile top bar ─── */}
       <div className="lg:hidden sticky top-0 z-30 h-14 bg-black border-b border-[var(--border)] flex items-center justify-between px-4">
@@ -85,11 +85,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* ─── Sidebar ─── */}
       <aside
         className={[
-          "fixed z-50 top-0 left-0 h-full w-64",
-          "bg-black border-r border-[var(--border)]",
-          "flex flex-col",
+          "fixed top-0 left-0 z-50 h-full bg-black border-r border-[var(--border)] flex flex-col",
+          "w-64 lg:w-56",
           "transition-transform duration-200 ease-out",
-          "lg:translate-x-0 lg:w-56",
+          "lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
@@ -126,7 +125,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 className={[
                   "block px-3 py-2.5 text-sm rounded-md mb-1 transition-colors",
                   active
-                    ? "bg-white text-black font-medium"
+                    ? "bg-[var(--hover)] text-white font-medium"
                     : "text-[var(--muted)] hover:bg-[var(--hover)] hover:text-white",
                 ].join(" ")}
               >
