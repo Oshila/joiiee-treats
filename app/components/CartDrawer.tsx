@@ -60,7 +60,7 @@ export function CartDrawer() {
               <Link
                 href="/shop"
                 onClick={() => setIsOpen(false)}
-                className="bg-white text-black px-5 py-2.5 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors"
+                className="bg-gray-500 text-black px-5 py-2.5 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors"
               >
                 Continue shopping
               </Link>
