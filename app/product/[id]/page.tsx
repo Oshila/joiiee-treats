@@ -9,7 +9,7 @@ import { CartDrawer } from "@/app/components/CartDrawer";
 import { ProductCard } from "@/app/components/ProductCard";
 import { getProduct, getProducts } from "@/app/services/productService";
 import { useCart } from "@/app/providers/CartProvider";
-import { Minus, Plus, ArrowLeft } from "lucide-react";
+import { Minus, Plus, ArrowLeft, Check } from "lucide-react";
 
 export default function ProductPage() {
   const params = useParams();
@@ -23,6 +23,7 @@ export default function ProductPage() {
   const [size, setSize] = useState("");
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -71,17 +72,24 @@ export default function ProductPage() {
   }
 
   const soldOut = product.stock <= 0;
+  const hasVariants =
+    product.sizes?.length > 0 &&
+    !(product.sizes.length === 1 && product.sizes[0] === "Default");
 
   const handleAdd = () => {
     if (soldOut) return;
-    addItem({
-      id: product.id,
-      name: product.name,
-      size,
-      price: product.price,
-      image: product.images?.[0] || "/placeholder.png",
-      stock: product.stock,
-    });
+    for (let i = 0; i < qty; i++) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        size,
+        price: product.price,
+        image: product.images?.[0] || "/placeholder.png",
+        stock: product.stock,
+      });
+    }
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
@@ -112,7 +120,7 @@ export default function ProductPage() {
                   <button
                     key={i}
                     onClick={() => setActiveImage(i)}
-                    className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border ${
+                    className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border-2 ${
                       activeImage === i ? "border-white" : "border-[var(--border)]"
                     }`}
                   >
@@ -143,68 +151,103 @@ export default function ProductPage() {
               )}
             </div>
 
-            <p className="text-sm text-[var(--muted)] leading-relaxed mb-6">
-              {product.description}
-            </p>
+            {product.description && (
+              <p className="text-sm text-[var(--muted)] leading-relaxed mb-8">
+                {product.description}
+              </p>
+            )}
 
-            {product.sizes?.length > 0 && (
-              <div className="mb-5">
-                <p className="text-xs font-medium mb-2 text-white">Size</p>
+            {/* Size picker */}
+            {hasVariants && (
+              <div className="mb-6">
+                <div className="flex items-baseline justify-between mb-3">
+                  <p className="text-sm font-medium text-white">Choose option</p>
+                  <span className="text-xs text-[var(--muted)]">
+                    Selected: <span className="text-white">{size}</span>
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((s: string) => (
-                    <button
-                      key={s}
-                      onClick={() => setSize(s)}
-                      className={`text-xs px-3 py-2 rounded-md border transition-colors ${
-                        size === s
-                          ? "bg-white text-black border-white"
-                          : "border-[var(--border)] text-white hover:bg-[var(--hover)]"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                  {product.sizes.map((s: string) => {
+                    const active = size === s;
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setSize(s)}
+                        className={`relative text-sm px-4 py-2.5 rounded-md border-2 font-medium transition-all ${
+                          active
+                            ? "bg-white text-black border-white"
+                            : "border-[var(--border)] text-white hover:border-white"
+                        }`}
+                      >
+                        {s}
+                        {active && (
+                          <Check
+                            size={12}
+                            className="absolute -top-1 -right-1 bg-black text-white rounded-full p-0.5"
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            <div className="mb-6">
-              <p className="text-xs font-medium mb-2 text-white">Quantity</p>
+            {/* Quantity */}
+            <div className="mb-8">
+              <div className="flex items-baseline justify-between mb-3">
+                <p className="text-sm font-medium text-white">Quantity</p>
+                {product.stock > 0 && (
+                  <span className="text-xs text-[var(--muted)]">
+                    {product.stock} available
+                  </span>
+                )}
+              </div>
               <div className="inline-flex items-center border border-[var(--border)] rounded-md">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="p-2.5 text-white hover:bg-[var(--hover)] transition-colors"
+                  disabled={qty <= 1}
+                  className="p-3 text-white hover:bg-[var(--hover)] disabled:opacity-40 transition-colors"
                 >
                   <Minus size={14} />
                 </button>
-                <span className="w-10 text-center text-sm text-white">{qty}</span>
+                <span className="w-12 text-center text-sm text-white font-medium">
+                  {qty}
+                </span>
                 <button
                   onClick={() => setQty(Math.min(product.stock, qty + 1))}
-                  className="p-2.5 text-white hover:bg-[var(--hover)] transition-colors"
+                  disabled={qty >= product.stock}
+                  className="p-3 text-white hover:bg-[var(--hover)] disabled:opacity-40 transition-colors"
                 >
                   <Plus size={14} />
                 </button>
               </div>
-              {product.stock > 0 && product.stock < 10 && (
-                <p className="text-xs text-[var(--muted)] mt-2">
-                  Only {product.stock} left in stock
-                </p>
-              )}
             </div>
 
+            {/* CTA */}
             <button
-              onClick={() => {
-                for (let i = 0; i < qty; i++) handleAdd();
-              }}
+              onClick={handleAdd}
               disabled={soldOut}
-              className="w-full bg-white text-black py-3.5 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className={`w-full py-4 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${
+  added
+    ? "bg-green-600 text-white"
+    : "bg-gray-500 text-white hover:bg-gray-400"
+} disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              {soldOut ? "Sold Out" : "Add to Cart"}
+              {added ? (
+                <>
+                  <Check size={16} /> Added to cart
+                </>
+              ) : soldOut ? (
+                "Sold Out"
+              ) : (
+                `Add to cart — ₦${(product.price * qty).toLocaleString()}`
+              )}
             </button>
 
-            <p className="text-xs text-[var(--muted)] mt-3">
+            <p className="text-xs text-[var(--muted)] mt-4">
               {product.isPreorder
-                ? "This is a pre-order item. Ships in 7-14 days."
+                ? "Pre-order item — ships in 7-14 days"
                 : "Delivery quoted separately after order is placed"}
             </p>
           </div>
