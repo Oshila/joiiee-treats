@@ -31,7 +31,7 @@ export function Header() {
                 href="/"
                 className="text-[17px] font-semibold tracking-tight text-white"
               >
-                Shop With Me
+                OnCart
               </Link>
 
               <nav className="hidden md:flex items-center gap-7">

@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shop With Me — Modern Essentials",
+  title: "OnCart — Modern Essentials",
   description: "Curated tech, accessories, and pre-order drops. Fast delivery across Nigeria.",
   keywords: "shop, ecommerce, tech, accessories, nigeria",
   openGraph: {
-    title: "Shop With Me",
+    title: "OnCart",
     description: "Curated tech, accessories, and pre-order drops.",
     type: "website",
   },

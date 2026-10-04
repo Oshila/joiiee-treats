@@ -5,7 +5,7 @@ import { AdminLayout } from "@/app/components/admin/AdminLayout";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
-    storeName: "Shop With Me",
+    storeName: "OnCart",
     email: "",
     phone: "",
     deliveryFee: "2000",

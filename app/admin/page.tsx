@@ -25,7 +25,7 @@ export default function AdminLogin() {
         <p className="text-xs tracking-[0.2em] uppercase text-[var(--muted)] mb-3 text-center">
           Admin
         </p>
-        <h1 className="text-xl font-medium text-center mb-8">Shop With Me</h1>
+        <h1 className="text-xl font-medium text-center mb-8">OnCart</h1>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <input

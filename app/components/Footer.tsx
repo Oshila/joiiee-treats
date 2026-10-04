@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <p className="text-base font-semibold tracking-tight mb-3">
-              Shop With Me
+              OnCart
             </p>
             <p className="text-sm text-[var(--muted)] max-w-xs">
               Curated tech and accessories. Fast delivery across Nigeria.
@@ -43,7 +43,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-[var(--border)] flex flex-col sm:flex-row justify-between gap-2 text-xs text-[var(--muted)]">
-          <p>© {new Date().getFullYear()} Shop With Me. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} OnCart. All rights reserved.</p>
           <Link href="/admin" className="hover:text-[var(--fg)]">Admin</Link>
         </div>
       </div>

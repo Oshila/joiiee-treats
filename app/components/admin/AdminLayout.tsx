@@ -68,7 +68,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <Menu size={20} />
         </button>
         <Link href="/admin/dashboard" className="text-sm font-medium text-white">
-          Shop With Me
+          OnCart
         </Link>
         <div className="w-8" />
       </div>
@@ -99,7 +99,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               href="/admin/dashboard"
               className="block text-sm font-medium text-white truncate"
             >
-              Shop With Me
+              OnCart
             </Link>
             <p className="text-[10px] tracking-wider uppercase text-[var(--muted)] mt-1">
               Admin
