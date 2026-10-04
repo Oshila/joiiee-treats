@@ -50,7 +50,7 @@ export default function OrdersPage() {
             onClick={() => setFilter(s)}
             className={`text-xs px-3 py-1.5 rounded-md border capitalize transition-colors ${
               filter === s
-                ? "bg-white text-black border-black"
+                ? "bg-gray-500 text-black border-black"
                 : "border-[var(--border)] hover:bg-[var(--hover)]"
             }`}
           >

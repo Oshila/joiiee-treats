@@ -39,7 +39,7 @@ export default function AdminLogin() {
           {error && <p className="text-xs text-red-600">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-white text-black py-3 text-sm font-medium rounded-md hover:bg-[var(--hover)]"
+            className="w-full bg-gray-500 text-black py-3 text-sm font-medium rounded-md hover:bg-[var(--hover)]"
           >
             Sign In
           </button>

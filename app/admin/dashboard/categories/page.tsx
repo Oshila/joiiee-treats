@@ -49,7 +49,7 @@ export default function CategoriesPage() {
         </div>
         <Link
           href="/admin/dashboard/products"
-          className="inline-flex items-center justify-center gap-2 bg-white text-black px-4 py-2.5 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-gray-500 text-black px-4 py-2.5 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors w-full sm:w-auto"
         >
           <Plus size={16} />
           Add Product
@@ -77,7 +77,7 @@ export default function CategoriesPage() {
           </p>
           <Link
             href="/admin/dashboard/products"
-            className="inline-flex items-center gap-2 bg-white text-black px-4 py-2 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 bg-gray-500 text-black px-4 py-2 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors"
           >
             <Plus size={14} />
             Add Product

@@ -204,7 +204,7 @@ export default function CheckoutPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={`/order/${orderNumber}`}
-              className="inline-flex justify-center bg-white text-black px-6 py-3 text-sm font-medium rounded-md hover:bg-neutral-200 transition-colors"
+              className="inline-flex justify-center bg-gray-500 text-black px-6 py-3 text-sm font-medium rounded-md hover:bg-neutral-200 transition-colors"
             >
               View Order
             </Link>

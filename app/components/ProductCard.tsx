@@ -39,7 +39,7 @@ export function ProductCard({ product }: Props) {
           }}
         />
         {soldOut && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gray-500/70 flex items-center justify-center">
             <span className="text-xs font-medium tracking-wider uppercase">
               Sold Out
             </span>

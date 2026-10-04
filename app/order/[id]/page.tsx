@@ -56,7 +56,7 @@ export default function OrderPage() {
           </p>
           <Link
             href="/track"
-            className="inline-block bg-white text-black px-6 py-3 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors"
+            className="inline-block bg-gray-500 text-black px-6 py-3 text-sm font-medium rounded-md hover:bg-[var(--hover)] hover:text-white transition-colors"
           >
             Track another order
           </Link>
@@ -128,7 +128,7 @@ export default function OrderPage() {
                       <div
                         className={`w-9 h-9 rounded-full flex items-center justify-center border-2 ${
                           done
-                            ? "bg-white text-black border-white"
+                            ? "bg-gray-500 text-black border-white"
                             : "bg-transparent text-[var(--muted)] border-[var(--border)]"
                         }`}
                       >
@@ -137,7 +137,7 @@ export default function OrderPage() {
                       {i < STEPS.length - 1 && (
                         <div
                           className={`w-0.5 h-8 ${
-                            i < currentIndex ? "bg-white" : "bg-[var(--border)]"
+                            i < currentIndex ? "bg-gray-500" : "bg-[var(--border)]"
                           }`}
                         />
                       )}
