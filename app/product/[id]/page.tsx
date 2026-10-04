@@ -120,9 +120,8 @@ export default function ProductPage() {
                   <button
                     key={i}
                     onClick={() => setActiveImage(i)}
-                    className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border-2 ${
-                      activeImage === i ? "border-white" : "border-[var(--border)]"
-                    }`}
+                    className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border-2 ${activeImage === i ? "border-white" : "border-[var(--border)]"
+                      }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
                   </button>
@@ -173,11 +172,10 @@ export default function ProductPage() {
                       <button
                         key={s}
                         onClick={() => setSize(s)}
-                        className={`relative text-sm px-4 py-2.5 rounded-md border-2 font-medium transition-all ${
-                          active
-                            ? "bg-white text-black border-white"
-                            : "border-[var(--border)] text-white hover:border-white"
-                        }`}
+                        className={`relative text-sm px-4 py-2.5 rounded-md border-2 font-medium transition-all ${active
+                            ? "border-white text-white"
+                            : "border-[var(--border)] text-[var(--muted)] hover:border-white hover:text-white"
+                          }`}
                       >
                         {s}
                         {active && (
@@ -228,11 +226,10 @@ export default function ProductPage() {
             <button
               onClick={handleAdd}
               disabled={soldOut}
-              className={`w-full py-4 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${
-  added
-    ? "bg-green-600 text-white"
-    : "bg-gray-500 text-white hover:bg-gray-400"
-} disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`w-full py-4 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${added
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-500 text-white hover:bg-gray-400"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {added ? (
                 <>

@@ -101,3 +101,19 @@ export const findOrder = async (orderNumber: string, phone: string) => {
     return { success: false, error: e.message };
   }
 };
+export const findOrdersByPhone = async (phone: string) => {
+  try {
+    const snap = await getDocs(collection(db, "orders"));
+    const results: any[] = [];
+    const ph = phone.trim();
+    snap.forEach((d) => {
+      const data = d.data();
+      if (data.customer?.phone === ph) {
+        results.push({ id: d.id, ...data });
+      }
+    });
+    return { success: true, orders: results };
+  } catch (e: any) {
+    return { success: false, orders: [], error: e.message };
+  }
+};

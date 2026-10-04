@@ -29,7 +29,6 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-[var(--muted)]">
               <li><Link href="/track" className="hover:text-[var(--fg)]">Track Order</Link></li>
               <li><Link href="/contact" className="hover:text-[var(--fg)]">Contact</Link></li>
-              <li><Link href="/returns" className="hover:text-[var(--fg)]">Returns</Link></li>
             </ul>
           </div>
 
