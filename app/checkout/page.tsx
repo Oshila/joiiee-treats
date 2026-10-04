@@ -352,7 +352,7 @@ export default function CheckoutPage() {
               <button
                 onClick={handlePayment}
                 disabled={loading}
-                className="w-full mt-5 bg-white text-black py-3.5 text-sm font-medium rounded-md hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full mt-5 bg-gray-500 text-black py-3.5 text-sm font-medium rounded-md hover:bg-[var(--hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading
                   ? "Processing..."
